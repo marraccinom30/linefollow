@@ -1,0 +1,80 @@
+#include <kipr/botball.h>
+int l_motor = 0;
+int r_motor = 3;
+int rspeed = 50; //rspeed of forward
+int lspeed = 35; //lspeed of forward
+int lmvr = 100; //left motor for veer right
+int rmvr = 0; //right motor for veer right
+int rmvl = 100; //right motor for veer left
+int lmvl = 5; //left motor for veer left
+int sens = 0; // line sensor
+int black = 800;
+int eye = 5;
+int tail = 1;
+int neutral = 1406;
+int wide1 = 2047;
+int wide2 = 600;
+int wavetime = 500;
+
+int main()
+{  
+  linefollow();
+  wave();
+  return 0;
+}
+//FUNCTIONS
+
+void forward(){
+   motor(l_motor, lspeed);
+   motor(r_motor, rspeed); // go forward  
+}
+
+void veerright (){
+  printf("right\n");
+  motor(l_motor, lmvr);
+  motor(r_motor, rmvr);
+ 
+}
+void veerleft (){
+  printf("left\n");
+  motor(r_motor, rmvl);
+  motor(l_motor, -lmvl);
+}
+
+void linefollow(){
+  while(analog(eye) < 2700){
+    forward();
+    if (analog(sens) > black){
+      veerright();
+    }
+    if (analog(sens) < black){
+      veerleft();
+    }
+  }
+}
+void wave(){
+  while(analog(eye) > 2700){
+  printf("Wave\n");
+  stop();
+  set_servo_position(tail, neutral);
+  enable_servos();
+  set_servo_position(tail, wide1);
+  msleep(wavetime);
+  set_servo_position(tail, wide2);
+  msleep(wavetime);
+  set_servo_position(tail, wide1);
+  msleep(wavetime);
+  set_servo_position(tail, wide2);
+  msleep(wavetime);
+  set_servo_position(tail, neutral);
+  msleep(wavetime);
+  disable_servos();
+  return 0;
+  }
+}
+
+void stop(){
+  motor(l_motor, 0);
+  motor(r_motor, 0);
+}
+
